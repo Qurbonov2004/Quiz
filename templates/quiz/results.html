@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Main Content -->
+<section class="section">
+    <div class="row d-flex justify-content-center">
+        <h1 class="col-12" style="text-align: center;">All quizes you've created</h1>
+        {% for result in results %}
+            <div class="card card-danger col-5 m-2">
+                <div class="card-header">
+                    <h4>{{ result.taker.full_name }}</h4>
+                    <div class="card-header-action">
+                        <a href="{% url 'dash:result_detail' result.id %}" class="btn btn-primary">Get Details</a>
+                    </div>
+                </div>
+                <div class="card-body">
+                </div>
+                <p>Total questions {{ result.questions }}</p>
+                <p>Correct answers {{ result.correct_answers }}</p>
+                <p>In Correct answers {{ result.incorrect_answers }}</p>
+                <p>Percentage {{ result.percentage }} %</p>
+            </div>
+        {% endfor %}
+    </div>
+    <a href="{% url 'dash:export_results_excel' %}" class="btn btn-success">Export to Excel</a>
+</section>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<canvas id="dynamicChart" width="400" height="400"></canvas>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get correct and incorrect counts from the Django context
+        var correctCount = {{ correct_count }};
+        var incorrectCount = {{ incorrect_count }};
+
+        console.log('Correct Count:', correctCount);
+        console.log('Incorrect Count:', incorrectCount);
+
+        // Create a pie chart with dynamic data
+        var ctxDynamic = document.getElementById('dynamicChart').getContext('2d');
+        var dynamicChart = new Chart(ctxDynamic, {
+            type: 'pie',
+            data: {
+                labels: ['Correct Answers', 'Incorrect Answers'],
+                datasets: [{
+                    data: [correctCount, incorrectCount],
+                    backgroundColor: ['#36a2eb', '#ff6384'],
+                }],
+            },
+        });
+    });
+</script>
+
+
+{% endblock %}
